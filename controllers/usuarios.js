@@ -77,7 +77,7 @@ const actualizarUsuario = async (req, res = response) => {
         const usuarioActualizado = await Usuario.findByIdAndUpdate(id, campos, { new: true })
         res.json({
             ok: true,
-            usuarioActualizado
+            usuarioActualizado:campos
         });
 
     } catch (error) {
