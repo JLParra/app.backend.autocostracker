@@ -1,26 +1,27 @@
 const { response } = require('express');
-const Estado = require('../models/estado');
-const { generateJWT } = require('../helpers/jwt');
+const Marca = require('../models/marca');
 
 
 
-const getEstados = async (req, res) => {
-    const estados = await Estado.find({}, 'nombre')
-        .populate('usuario', 'nombre img')
+
+const getMarcas = async (req, res) => {
+    const marcas = await Marca.find({}, 'nombre')
+        .populate('usuario', 'nombre usuario')
+        .populate('estado', 'nombre ')
     res.json({
         ok: true,
-        estados,
+        marcas,
         // uid: req.id
     });
 }
 
-const crearEstado = async (req, res = response) => {
+const crearMarca = async (req, res = response) => {
     const uid = req.id;
     const { nombre } = req.body;
-    const estado = new Estado({ usuario: uid, ...req.body });
-    console.log(estado);
+    const marca = new Marca({ usuario: uid, ...req.body });
+    // console.log(estado);
     try {
-        const existeData = await Estado.findOne({ nombre });
+        const existeData = await Marca.findOne({ nombre });
 
         if (existeData) {
             return res.status(400).json({
@@ -29,11 +30,11 @@ const crearEstado = async (req, res = response) => {
             });
         }
 
-        const estadoDB = await estado.save();
+        const marcaDB = await marca.save();
 
         res.json({
             ok: true,
-            estado: estadoDB
+            marca: marcaDB
         });
     } catch (error) {
         console.log(error);
@@ -44,23 +45,23 @@ const crearEstado = async (req, res = response) => {
     }
 
 }
-const actualizarEstado = async (req, res = response) => {
+const actualizarMarca = async (req, res = response) => {
     const id = req.params.id
     try {
-        const estadoDB = await Estado.findById(id);
-        if (!estadoDB) {
+        const marcaDB = await Marca.findById(id);
+        if (!marcaDB) {
             res.status(404).json({
                 ok: false,
-                msg: 'No existe el estado por ese id'
+                msg: 'No existe marca por ese id'
             });
         }
 
         // ACTUALIZACIONES
         const { ...nombre } = req.body;
-        console.log(nombre)
+        // console.log(nombre)
         if (estadoDB === nombre) {
-            const existeEstado = await Estado.findOne({ nombre });
-            if (existeEstado) {
+            const existeMarca = await Marca.findOne({ nombre });
+            if (existeMarca) {
                 res.status(400).json({
                     ok: false,
                     msg: 'Ya existe un nombre'
@@ -68,7 +69,7 @@ const actualizarEstado = async (req, res = response) => {
             }
         }
 
-        const update = await Estado.findByIdAndUpdate(id, nombre, { new: true })
+        const update = await Marca.findByIdAndUpdate(id, nombre, { new: true })
         res.json({
             ok: true,
             update
@@ -84,4 +85,4 @@ const actualizarEstado = async (req, res = response) => {
     }
 }
 
-module.exports = { getEstados, crearEstado, actualizarEstado };
+module.exports = { getMarcas, crearMarca, actualizarMarca };
