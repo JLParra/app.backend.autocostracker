@@ -23,6 +23,7 @@ app.use('/api/login', require('./routes/auth'));
 app.use('/api/estados', require('./routes/estado'));
 app.use('/api/marcas', require('./routes/marca'));
 app.use('/api/vehiculos', require('./routes/vehiculo'));
+app.use('/api/valorguardia', require('./routes/valorGuardia'));
 
 
 
