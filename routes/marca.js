@@ -1,11 +1,12 @@
 const { Router } = require("express");
-const { getMarcas, crearMarca, actualizarMarca } = require("../controllers/marca");
+const { getMarcas, crearMarca, actualizarMarca, getMarcasActivas } = require("../controllers/marca");
 const { check } = require("express-validator");
 const { validarCampos } = require("../middlewares/validar-campos");
 const { validarJWT } = require("../middlewares/validar-jwt");
 
 const router = Router();
 router.get('/', validarJWT, getMarcas);
+router.get('/activas', validarJWT, getMarcasActivas);
 router.post('/',
     [
         validarJWT,

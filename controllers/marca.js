@@ -8,6 +8,7 @@ const getMarcas = async (req, res) => {
     const marcas = await Marca.find({}, 'nombre')
         .populate('usuario', 'nombre usuario')
         .populate('estado', 'nombre ')
+
     res.json({
         ok: true,
         marcas,
@@ -15,6 +16,20 @@ const getMarcas = async (req, res) => {
     });
 }
 
+const getMarcasActivas = async (req, res) => {
+    const marcas = await Marca.find({}, 'nombre')
+        .populate('usuario', 'nombre usuario')
+        .populate('estado', 'nombre ')
+        // Filtrar las marcas donde el estado sea igual a "Activo"
+        const marcasActivas = marcas.filter(marca => marca.estado.nombre === 'Activo');
+
+
+    res.json({
+        ok: true,
+        marcasActivas,
+
+    });
+}
 const crearMarca = async (req, res = response) => {
     const uid = req.id;
     const { nombre } = req.body;
@@ -85,4 +100,4 @@ const actualizarMarca = async (req, res = response) => {
     }
 }
 
-module.exports = { getMarcas, crearMarca, actualizarMarca };
+module.exports = { getMarcas, crearMarca, actualizarMarca, getMarcasActivas };

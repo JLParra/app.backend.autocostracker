@@ -23,7 +23,7 @@ const crearVehiculo = async (req, res = response) => {
     const fechaEcuador = moment().tz('America/Guayaquil'); // Zona horaria de Guayaquil
     console.log(fechaEcuador);
     const vehiculo = new Vehiculo({ usuario: uid, fechaRegistro:fechaEcuador,...req.body });
-    // console.log(estado);
+     console.log(vehiculo);
     try {
         const existeData = await Vehiculo.findOne({ nombre });
 
