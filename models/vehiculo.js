@@ -18,6 +18,10 @@ const VehiculoSchema = new Schema({
         type: String,
         required: true
     },
+    KMactual: {
+        type: Number,
+        required: false
+    },
     alias: {
         type: String,
     },

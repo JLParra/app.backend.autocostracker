@@ -1,31 +1,29 @@
 const { response } = require('express');
-const Vehiculo = require('../models/vehiculo');
+const Guardia = require('../models/guardias');
 const moment = require('moment-timezone');
 
 
 
 
-const getVehiculos = async (req, res) => {
-    const vehiculos = await Vehiculo.find({}, 'nombre modelo anio KMactual fuenteIngreso fechaRegistro')
+const getGuardias = async (req, res) => {
+    const guardias = await Guardia.find({}, 'fechaRegistro fechaPago diaPagado libre valorEntregado valorPendiente')
         .populate('usuario', 'nombre usuario')
         .populate('estado', 'nombre ')
-        .populate('marca', 'nombre ')
     res.json({
         ok: true,
-        vehiculos,
+        guardias,
         // uid: req.id
     });
 }
-const getVehiculoById = async (req, res) => {
+const getGuardiaById = async (req, res) => {
     const id = req.params.id;
     try {
-        const vehiculo = await Vehiculo.findById(id)
+        const guardia = await Guardia.findById(id)
             .populate('usuario', 'nombre usuario')
             .populate('estado', 'nombre ')
-            .populate('marca', 'nombre ')
         res.json({
             ok: true,
-            vehiculo,
+            guardia,
             // uid: req.id
         });
     } catch (error) {
@@ -38,28 +36,28 @@ const getVehiculoById = async (req, res) => {
     }
 
 }
-const crearVehiculo = async (req, res = response) => {
+const crearGuardia = async (req, res = response) => {
     const uid = req.id;
-    const { nombre } = req.body;
+    const { diaPagado } = req.body;
     const fechaEcuador = moment().tz('America/Guayaquil'); // Zona horaria de Guayaquil
     console.log(fechaEcuador);
-    const vehiculo = new Vehiculo({ usuario: uid, fechaRegistro: fechaEcuador, ...req.body });
+    const guardia = new Guardia({ usuario: uid, fechaRegistro: fechaEcuador, fechaPago: fechaEcuador, ...req.body });
     console.log(vehiculo);
     try {
-        const existeData = await Vehiculo.findOne({ nombre });
+        const existeData = await Guardia.findOne({ diaPagado });
 
         if (existeData) {
             return res.status(400).json({
                 ok: false,
-                msg: 'El nombre ya esta registrado'
+                msg: 'El dia de pago ya fue cancelado(pagado)'
             });
         }
 
-        const vehiculoDB = await vehiculo.save();
+        const guardiaDB = await guardia.save();
 
         res.json({
             ok: true,
-            vehiculo: vehiculoDB
+            vehiculo: guardiaDB
         });
     } catch (error) {
         console.log(error);
@@ -70,32 +68,32 @@ const crearVehiculo = async (req, res = response) => {
     }
 
 }
-const actualizarVehiculo = async (req, res = response) => {
+const actualizarGuardia = async (req, res = response) => {
     console.log(res)
     const id = req.params.id
     try {
-        const vehiculoDB = await Vehiculo.findById(id);
-        if (!vehiculoDB) {
+        const guardiaDB = await Guardia.findById(id);
+        if (!guardiaDB) {
             res.status(404).json({
                 ok: false,
-                msg: 'No existe vehiculo con ese id'
+                msg: 'No existe guardia con ese id'
             });
         }
 
         // ACTUALIZACIONES
-        const { ...nombre } = req.body;
-        console.log(nombre)
-        if (vehiculoDB === nombre) {
-            const existeMarca = await Vehiculo.findOne({ nombre });
-            if (existeMarca) {
+        const { ...diaPagado } = req.body;
+        console.log(diaPagado)
+        if (vehiculoDB === diaPagado) {
+            const existediaPagado = await Vehiculo.findOne({ diaPagado });
+            if (existediaPagado) {
                 res.status(400).json({
                     ok: false,
-                    msg: 'Ya existe un vehiculo registrado con ese nombre'
+                    msg: 'El dia de pago ya fue cancelado(pagado)'
                 });
             }
         }
 
-        const update = await Vehiculo.findByIdAndUpdate(id, nombre, { new: true })
+        const update = await Guardia.findByIdAndUpdate(id, diaPagado, { new: true })
         res.json({
             ok: true,
             update
@@ -111,4 +109,4 @@ const actualizarVehiculo = async (req, res = response) => {
     }
 }
 
-module.exports = { getVehiculos, crearVehiculo, actualizarVehiculo, getVehiculoById };
+module.exports = { getGuardias, crearGuardia, actualizarGuardia, getGuardiaById };

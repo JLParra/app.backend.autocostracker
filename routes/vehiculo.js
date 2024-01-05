@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { getVehiculos,crearVehiculo,actualizarVehiculo } = require("../controllers/vehiculo");
+const { getVehiculos, crearVehiculo, actualizarVehiculo, getVehiculoById } = require("../controllers/vehiculo");
 const { check } = require("express-validator");
 const { validarCampos } = require("../middlewares/validar-campos");
 const { validarJWT } = require("../middlewares/validar-jwt");
@@ -12,8 +12,8 @@ router.post('/',
         check('nombre', 'El nombre es obligatorio').not().isEmpty(),
         check('modelo', 'El modelo es obligatorio').not().isEmpty(),
         check('anio', 'El año es obligatorio').not().isEmpty(),
-        check('estado', 'El id del estado es obligatorio').not().isEmpty(), 
-        check('marca', 'El id de la marca es obligatoria').not().isEmpty(), 
+        check('estado', 'El id del estado es obligatorio').not().isEmpty(),
+        check('marca', 'El id de la marca es obligatoria').not().isEmpty(),
         validarCampos
     ],
     crearVehiculo);
@@ -29,5 +29,5 @@ router.put('/:id',
     ],
     actualizarVehiculo);
 
-
+router.get('/:id',validarJWT,getVehiculoById);
 module.exports = router;

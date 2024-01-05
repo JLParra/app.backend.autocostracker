@@ -22,6 +22,7 @@ app.use('/api/usuarios', require('./routes/usuarios'));
 app.use('/api/login', require('./routes/auth'));
 app.use('/api/estados', require('./routes/estado'));
 app.use('/api/marcas', require('./routes/marca'));
+app.use('/api/guardias', require('./routes/guardia'));
 app.use('/api/vehiculos', require('./routes/vehiculo'));
 app.use('/api/valor-guardia', require('./routes/valorGuardia'));
 app.use('/api/lista-repuestos', require('./routes/ListaRepuestos'));
