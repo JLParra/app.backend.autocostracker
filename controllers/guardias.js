@@ -1,19 +1,59 @@
 const { response } = require('express');
 const Guardia = require('../models/guardias');
+const Abono = require('../models/abono');
 const moment = require('moment-timezone');
 
 
 
 
 const getGuardias = async (req, res) => {
-    const guardias = await Guardia.find({}, 'fechaRegistro fechaPago diaPagado libre valorEntregado valorPendiente')
-        .populate('usuario', 'nombre usuario')
-        .populate('estado', 'nombre ')
+
+    const guardias = await Guardia.find({}, 'fechaActual diaPagado abonando mantenimiento feriado valorPendiente')
+        .populate('usuario', 'nombre')
+        .populate('estado', 'nombre')
+        .populate('vehiculo', 'nombre')
+
+    // Obtener los abonos correspondientes a las guardias
+    const abonosPromises = guardias.map(async (guardia) => {
+        const abonos = await Abono.find({ guardia: guardia._id }, 'fechaAbono valorAbono usuario');
+        return { guardia, abonos };
+    });
+
+    // Esperar a que todas las promesas de abonos se resuelvan
+    const guardiasConAbonos = await Promise.all(abonosPromises);
+
     res.json({
         ok: true,
-        guardias,
-        // uid: req.id
+        guardiasConAbonos
     });
+
+    //Modificar la estructura del JSON antes de enviar la respuesta
+
+
+    // guardias.forEach(async (guardia) => {
+    //     const abonos = await Abono.find({ guardia: guardia._id });
+    //     console.log('Guardia:', guardia);
+
+    //     if (abonos.length > 0) {
+    //         console.log('Abonos correspondientes:');
+    //         abonos.forEach((abono) => {
+    //             res.json({
+    //                 ok: true,
+    //                 guardias,
+    //                 abono
+    //             });
+    //         });
+    //     } else {
+    //         res.json({
+    //             ok: true,
+    //             guardias,
+
+    //         });
+    //     }
+    // });
+
+
+
 }
 const getGuardiaById = async (req, res) => {
     const id = req.params.id;
@@ -38,27 +78,58 @@ const getGuardiaById = async (req, res) => {
 }
 const crearGuardia = async (req, res = response) => {
     const uid = req.id;
-    const { diaPagado } = req.body;
+    const { diaPagado, abonos } = req.body
     const fechaEcuador = moment().tz('America/Guayaquil'); // Zona horaria de Guayaquil
     console.log(fechaEcuador);
-    const guardia = new Guardia({ usuario: uid, fechaRegistro: fechaEcuador, fechaPago: fechaEcuador, ...req.body });
-    console.log(vehiculo);
+    const guardia = new Guardia(
+        {
+            usuario: uid,
+            ...req.body
+        });
+    console.log(guardia);
     try {
         const existeData = await Guardia.findOne({ diaPagado });
-
         if (existeData) {
             return res.status(400).json({
                 ok: false,
-                msg: 'El dia de pago ya fue cancelado(pagado)'
+                msg: 'El dia de pago ya esta registrado'
             });
         }
 
-        const guardiaDB = await guardia.save();
+        const guardiaGuardada = await guardia.save();
 
-        res.json({
-            ok: true,
-            vehiculo: guardiaDB
-        });
+        if (abonos && Array.isArray(abonos) && abonos.length > 0) {
+            // Crear un arreglo para almacenar las promesas de guardado de abonos
+            const promesasAbonos = abonos.map(async (abono) => {
+                // Crear una nueva instancia de Abono con la referencia a la guardia
+                const nuevoAbono = new Abono({
+                    guardia: guardiaGuardada._id,
+                    fechaAbono: new Date(abono.fechaAbono),
+                    valorAbono: abono.valorAbono,
+                    valorPendiente: abono.valorPendiente,
+                    usuario: guardiaGuardada.usuario,
+                });
+
+                // Guardar el abono en la base de datos y devolver la promesa resultante
+                return nuevoAbono.save();
+            });
+
+            // Esperar a que se completen todas las promesas de guardado de abonos
+            const abonosGuardados = await Promise.all(promesasAbonos);
+            res.json({
+                ok: true,
+                guardia: guardiaGuardada,
+                abono: abonosGuardados
+            });
+        } else {
+            res.json({
+                ok: true,
+                guardia: guardiaGuardada,
+                abono: null
+            });
+        }
+
+
     } catch (error) {
         console.log(error);
         res.status(500).json({

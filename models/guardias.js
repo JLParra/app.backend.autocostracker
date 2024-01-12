@@ -1,43 +1,58 @@
 const { Schema, model } = require("mongoose");
 
 const GuardiaSchema = new Schema({
-    fechaRegistro: {
+    vehiculo: {
+        required: true,
+        type: Schema.Types.ObjectId,
+        ref: 'Vehiculo'
+    },
+    montoDiario: {
         required: true ,
-        type: Date,
-    },
-    fechaPago: {
-        required: true ,
-        type: Date,
-    },
-    diaPagado:{
-        required: true ,
-        type: Date,
-    },
-    libre: {
-        type: Boolean,
-        required: false
-    },
-    valorEntregado: {
         type: Number,
-        required: true
     },
     valorPendiente: {
+        required: true ,
         type: Number,
-        required: true
+    },
+    fechaActual: {
+        required: true ,
+        type: Date,
+    },
+    diaPagado: {
+        required: true ,
+        type: Date,
     },
     estado: {
         required: true,
         type: Schema.Types.ObjectId,
         ref: 'Estado'
     },
-
+    abonando: {
+        type: Boolean,
+        required: false
+    },
+    mantenimiento: {
+        type: Boolean,
+        required: false
+    },
+    feriado: {
+        type: Boolean,
+        required: false
+    }, 
     usuario: {
-        required: true,
+        required: false,
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
     },
+    // abonos: [
+    //     { 
+    //         type:Schema.Types.ObjectId, 
+    //         ref: 'Abono' }
+    // ], // Cambiado a un arreglo de referencias a Abono
     
 });
+
+
 
 module.exports = model('Guardia', GuardiaSchema);
 
