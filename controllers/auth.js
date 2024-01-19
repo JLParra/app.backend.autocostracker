@@ -31,7 +31,8 @@ const login = async (req, res = response) => {
         res.json({
             ok: true,
             token,
-            uid:usuarioDB.id
+            uid:usuarioDB.id,
+            nombre:usuarioDB.nombre
         });
 
 

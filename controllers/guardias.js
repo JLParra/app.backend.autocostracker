@@ -13,18 +13,23 @@ const getGuardias = async (req, res) => {
         .populate('estado', 'nombre')
         .populate('vehiculo', 'nombre')
 
+    
+
     // Obtener los abonos correspondientes a las guardias
-    const abonosPromises = guardias.map(async (guardia) => {
+    const abonosPromises = await Promise.all( guardias.map(async (guardia) => {
         const abonos = await Abono.find({ guardia: guardia._id }, 'fechaAbono valorAbono usuario');
         return { guardia, abonos };
-    });
+    }));
 
     // Esperar a que todas las promesas de abonos se resuelvan
     const guardiasConAbonos = await Promise.all(abonosPromises);
 
     res.json({
-        ok: true,
-        guardiasConAbonos
+
+        Mensaje: 'Consulta realizada correctamente',
+        Objecto: guardiasConAbonos,
+        Codigo: res.statusCode,
+        Estado: "success"
     });
 
     //Modificar la estructura del JSON antes de enviar la respuesta
@@ -76,6 +81,7 @@ const getGuardiaById = async (req, res) => {
     }
 
 }
+
 const crearGuardia = async (req, res = response) => {
     const uid = req.id;
     const { diaPagado, abonos } = req.body
@@ -91,8 +97,11 @@ const crearGuardia = async (req, res = response) => {
         const existeData = await Guardia.findOne({ diaPagado });
         if (existeData) {
             return res.status(400).json({
-                ok: false,
-                msg: 'El dia de pago ya esta registrado'
+
+                Mensaje: 'El dia pagado ya esta registrado',
+                Objecto: null,
+                Codigo: 400,
+                Estado: "error"
             });
         }
 
@@ -117,24 +126,29 @@ const crearGuardia = async (req, res = response) => {
             // Esperar a que se completen todas las promesas de guardado de abonos
             const abonosGuardados = await Promise.all(promesasAbonos);
             res.json({
-                ok: true,
-                guardia: guardiaGuardada,
-                abono: abonosGuardados
+                Mensaje: 'Se registro correctamente',
+                Objecto: abonosGuardados,
+                Codigo: res.statusCode,
+                Estado: "success"
             });
         } else {
             res.json({
-                ok: true,
-                guardia: guardiaGuardada,
-                abono: null
+                Mensaje: 'Se registro correctamente',
+                Objecto: guardiaGuardada,
+                Codigo: res.statusCode,
+                Estado: "success"
             });
         }
 
 
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).json({
-            ok: false,
-            msg: 'Error inesperado, revisar logs'
+
+            Mensaje: error,
+            Objecto: null,
+            Codigo: res.statusCode,
+            Estado: "error"
         });
     }
 

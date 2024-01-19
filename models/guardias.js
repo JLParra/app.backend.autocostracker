@@ -44,11 +44,12 @@ const GuardiaSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
     },
-    // abonos: [
-    //     { 
-    //         type:Schema.Types.ObjectId, 
-    //         ref: 'Abono' }
-    // ], // Cambiado a un arreglo de referencias a Abono
+    abonos: [
+        { 
+            required: false,
+            type:Schema.Types.ObjectId, 
+            ref: 'Abono' }
+    ], // Cambiado a un arreglo de referencias a Abono
     
 });
 
