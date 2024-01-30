@@ -12,13 +12,20 @@ const getGuardias = async (req, res) => {
         .populate('usuario', 'nombre')
         .populate('estado', 'nombre')
         .populate('vehiculo', 'nombre')
+        .sort({ diaPagado: -1 });
 
-    
+
 
     // Obtener los abonos correspondientes a las guardias
-    const abonosPromises = await Promise.all( guardias.map(async (guardia) => {
+    const abonosPromises = await Promise.all(guardias.map(async (guardia) => {
         const abonos = await Abono.find({ guardia: guardia._id }, 'fechaAbono valorAbono usuario');
-        return { guardia, abonos };
+
+        // Crear un nuevo objeto que incluya la información de 'guardia' y 'abonos'
+        const guardiaConAbonos = {
+            ...guardia.toObject(), // Puedes usar toObject() para obtener un objeto plano de Mongoose
+            abonos,
+        };
+        return guardiaConAbonos
     }));
 
     // Esperar a que todas las promesas de abonos se resuelvan
@@ -81,6 +88,7 @@ const getGuardiaById = async (req, res) => {
     }
 
 }
+
 
 const crearGuardia = async (req, res = response) => {
     const uid = req.id;
