@@ -9,7 +9,7 @@ router.get('/', validarJWT, getEstados);
 router.post('/',
     [
         validarJWT,
-        check('nombre', 'El nombre es obligatorio').not().isEmpty(),
+        check('nombre', 'El nombre del estado es obligatorio').not().isEmpty(),
         // check('usuario', 'El id del usuario es obligatorio').isMongoId,
         validarCampos
     ],
@@ -17,7 +17,7 @@ router.post('/',
 router.put('/:id',
     [
         validarJWT,
-        check('nombre', 'El nombre es obligatorio').not().isEmpty(),
+        check('nombre', 'El nombre del estado es obligatorio').not().isEmpty(),
        
         validarCampos
 

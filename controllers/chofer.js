@@ -42,18 +42,18 @@ const getChoferesById = async (req, res) => {
 }
 const crearChoferes = async (req, res = response) => {
     const uid = req.id;
-    const { nombre } = req.body;
+    const { cedula } = req.body;
     const fechaEcuador = moment().tz('America/Guayaquil'); // Zona horaria de Guayaquil
     console.log(fechaEcuador);
     const chofer = new Chofer({ fechaRegistro: fechaEcuador, ...req.body });
     console.log(chofer);
     try {
-        const existeData = await Chofer.findOne({ nombre });
+        const existeData = await Chofer.findOne({ cedula });
 
         if (existeData) {
             return res.status(400).json({
                 ok: false,
-                msg: 'El nombre ya esta registrado'
+                msg: 'La cédula ya esta registrada'
             });
         }
 
@@ -73,22 +73,23 @@ const crearChoferes = async (req, res = response) => {
 
 }
 const actualizarChofer = async (req, res = response) => {
+    debugger
     console.log(res)
     const id = req.params.id
     try {
         const choferDB = await Chofer.findById(id);
         if (!choferDB) {
-            res.status(404).json({
+            res.status(404).json({ 
                 ok: false,
                 msg: 'No existe vehiculo con ese id'
             });
         }
 
         // ACTUALIZACIONES
-        const { ...nombre } = req.body;
-        console.log(nombre)
-        if (choferDB === nombre) {
-            const existeNombre = await Chofer.findOne({ nombre });
+        const { nombres, cedula } = req.body;
+        console.log(cedula)
+        if (choferDB === cedula) {
+            const existeNombre = await Chofer.findOne({ nombres });
             const existeCedula = await Chofer.findOne({ cedula });
             if (existeCedula || existeNombre) {
                 res.status(400).json({

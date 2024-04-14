@@ -31,6 +31,10 @@ const ChoferSchema = new Schema({
         type: String,
         required: true
     },
+    whatsapp:{
+        type: String,
+        required: true
+    },
     emergencia: {
         type: String,
         required: true
@@ -57,7 +61,8 @@ const ChoferSchema = new Schema({
     
 });
 
-
+// Definir índices únicos para cedula y nombres
+ChoferSchema.index({ cedula: 1, nombres: 1 }, { unique: true });
 
 module.exports = model('Chofer', ChoferSchema);
 
