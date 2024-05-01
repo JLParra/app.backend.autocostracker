@@ -31,8 +31,10 @@ const login = async (req, res = response) => {
         res.json({
             ok: true,
             token,
-            uid:usuarioDB.id,
-            nombre:usuarioDB.nombre
+            data: {
+                uid: usuarioDB.id,
+                nombre: usuarioDB.nombre
+            }
         });
 
 
@@ -46,8 +48,8 @@ const login = async (req, res = response) => {
     }
 
 }
-const renewToken = async (req, res= response)  =>{
-    const uid= req.uid;
+const renewToken = async (req, res = response) => {
+    const uid = req.uid;
     // GENERAR EL TOKEN JWT
     const token = await generateJWT(uid)
 
@@ -57,4 +59,4 @@ const renewToken = async (req, res= response)  =>{
     });
 }
 
-module.exports = { login, renewToken};
+module.exports = { login, renewToken };
