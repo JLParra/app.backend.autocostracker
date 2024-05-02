@@ -27,6 +27,7 @@ app.use('/api/vehiculos', require('./routes/vehiculo'));
 app.use('/api/lista-repuestos', require('./routes/ListaRepuestos'));
 app.use('/api/feriados', require('./routes/feriado'));
 app.use('/api/choferes', require('./routes/chofer'));
+app.use('/api/tipo-vehiculos', require('./routes/tipoVehiculo'));
 
 
 
