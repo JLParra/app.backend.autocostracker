@@ -9,7 +9,7 @@ const getTipoVehiculos = async (req, res) => {
         .populate('estado', 'nombre ')
     res.json({
         ok: true,
-        tipoVehiculo,
+        result: tipoVehiculo,
         // uid: req.id
     });
 }
